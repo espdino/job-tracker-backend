@@ -1,11 +1,12 @@
+require("dotenv").config();
+
 const { Pool } = require("pg");
 
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "job_tracker",
-  password: "q2e1w3r4",
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 const bcrypt = require("bcrypt");
