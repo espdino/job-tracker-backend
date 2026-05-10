@@ -100,10 +100,14 @@ app.get("/jobs", authMiddleware, async (req, res) => {
     query += " WHERE " + conditions.join(" AND ");
 
     // 🔹 Sorting
-    if (sort === "date") {
+    if (sort === "newest") {
       query += " ORDER BY applied_date DESC";
+    } else if (sort === "oldest") {
+      query += " ORDER BY applied_date ASC";
+    } else if (sort === "company") {
+      query += " ORDER BY company ASC";
     } else {
-      query += " ORDER BY id DESC";
+      query += " ORDER BY applied_date DESC";
     }
 
     const result = await pool.query(query, values);
