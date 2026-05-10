@@ -157,19 +157,24 @@ app.put("/jobs/:id", authMiddleware, async (req, res) => {
     }
 
     const result = await pool.query(
-      `
-  UPDATE jobs
-  SET
-    company = $1,
-    position = $2,
-    status = $3,
-    notes = $4,
-    applied_date = $5
-  WHERE id = $6
-    AND user_id = $7
-  RETURNING *
-  `,
-      [company, position, status, notes, applied_date, id, userId],
+      `UPDATE jobs
+   SET
+     company      = COALESCE($1, company),
+     position     = COALESCE($2, position),
+     status       = COALESCE($3, status),
+     notes        = COALESCE($4, notes),
+     applied_date = COALESCE($5, applied_date)
+   WHERE id = $6 AND user_id = $7
+   RETURNING *`,
+      [
+        company ?? null,
+        position ?? null,
+        status ?? null,
+        notes ?? null,
+        applied_date ?? null,
+        id,
+        userId,
+      ],
     );
 
     if (result.rows.length === 0) {
