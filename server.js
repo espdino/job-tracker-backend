@@ -145,7 +145,7 @@ app.put("/jobs/:id", authMiddleware, async (req, res) => {
       return res.status(400).json({ message: "Invalid ID" });
     }
 
-    const { company, position, status, notes, appliedDate } = req.body;
+    const { company, position, status, notes, applied_date } = req.body;
 
     // ✅ Validate status if provided
     if (status && !allowedStatuses.includes(status)) {
@@ -153,15 +153,17 @@ app.put("/jobs/:id", authMiddleware, async (req, res) => {
     }
 
     const result = await pool.query(
-      `UPDATE jobs
-       SET company = COALESCE($1, company),
-           position = COALESCE($2, position),
-           status = COALESCE($3, status),
-           notes = COALESCE($4, notes),
-           applied_date = COALESCE($5, applied_date)
-       WHERE id = $6 AND user_id = $7
-       RETURNING *`,
-      [company, position, status, notes, appliedDate, id, userId],
+      `
+  UPDATE jobs
+  SET
+    company = $1,
+    position = $2,
+    status = $3,
+    notes = $4,
+    applied_date = $5
+  WHERE id = $6
+  `,
+      [company, position, status, notes, applied_date, req.params.id],
     );
 
     if (result.rows.length === 0) {
