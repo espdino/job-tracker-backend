@@ -162,8 +162,10 @@ app.put("/jobs/:id", authMiddleware, async (req, res) => {
     notes = $4,
     applied_date = $5
   WHERE id = $6
+    AND user_id = $7
+  RETURNING *
   `,
-      [company, position, status, notes, applied_date, req.params.id],
+      [company, position, status, notes, applied_date, id, userId],
     );
 
     if (result.rows.length === 0) {
